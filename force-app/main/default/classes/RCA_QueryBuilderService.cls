@@ -119,7 +119,12 @@ public with sharing class RCA_QueryBuilderService {
     ) {
         String whereClause = 'Id IN (:quote1Id, :quote2Id)';
         String soqlQuery = buildSOQLQuery(configObj.Object_API_Name__c, fieldDefinitions, whereClause);
-        List<SObject> records = Database.query(soqlQuery);
+        
+        // Use FOR loop to handle large result sets
+        List<SObject> records = new List<SObject>();
+        for (SObject record : Database.query(soqlQuery)) {
+            records.add(record);
+        }
         
         return new RCA_DataStructures.QueryResult(records, configObj.Object_API_Name__c, 'Self');
     }
@@ -154,7 +159,11 @@ public with sharing class RCA_QueryBuilderService {
         if (!parentIds.isEmpty()) {
             String whereClause = 'Id IN :parentIds';
             String soqlQuery = buildSOQLQuery(configObj.Object_API_Name__c, fieldDefinitions, whereClause);
-            records = Database.query(soqlQuery);
+            
+            // Use FOR loop to handle large result sets
+            for (SObject record : Database.query(soqlQuery)) {
+                records.add(record);
+            }
         }
         
         return new RCA_DataStructures.QueryResult(records, configObj.Object_API_Name__c, 'Parent');
@@ -176,12 +185,27 @@ public with sharing class RCA_QueryBuilderService {
     ) {
         String whereClause = 'QuoteId IN (:quote1Id, :quote2Id)';
         if (String.isNotBlank(configObj.Parent_Identifier_Field__c)) {
-            // This is a grandchild relationship
-            whereClause = configObj.Parent_Identifier_Field__c + ' IN (SELECT Id FROM QuoteLineItem WHERE QuoteId IN (:quote1Id, :quote2Id))';
+            // This is a grandchild relationship - optimize by getting parent IDs first
+            List<Id> parentIds = new List<Id>();
+            for (QuoteLineItem qli : [SELECT Id FROM QuoteLineItem WHERE QuoteId IN (:quote1Id, :quote2Id) LIMIT 10000]) {
+                parentIds.add(qli.Id);
+            }
+            
+            // If no parent records found, return empty result to avoid unnecessary query
+            if (parentIds.isEmpty()) {
+                return new RCA_DataStructures.QueryResult(new List<SObject>(), configObj.Object_API_Name__c, 'Child');
+            }
+            
+            whereClause = configObj.Parent_Identifier_Field__c + ' IN :parentIds';
         }
         
         String soqlQuery = buildSOQLQueryWithRelationshipFields(configObj, fieldDefinitions, whereClause);
-        List<SObject> records = Database.query(soqlQuery);
+        
+        // Use FOR loop to handle large result sets and avoid "too many rows" error
+        List<SObject> records = new List<SObject>();
+        for (SObject record : Database.query(soqlQuery)) {
+            records.add(record);
+        }
         
         return new RCA_DataStructures.QueryResult(records, configObj.Object_API_Name__c, 'Child');
     }

@@ -209,7 +209,12 @@ public with sharing class RCA_DataProcessorService {
      */
     private static Map<Id, Id> getQuoteToParentMapping(Id quote1Id, Id quote2Id, String relationshipName) {
         String parentQuery = 'SELECT ' + relationshipName + ' FROM Quote WHERE Id IN (:quote1Id, :quote2Id)';
-        List<Quote> quotes = Database.query(parentQuery);
+        
+        // Use FOR loop for consistency (though only 2 records expected)
+        List<Quote> quotes = new List<Quote>();
+        for (Quote q : (List<Quote>) Database.query(parentQuery)) {
+            quotes.add(q);
+        }
         
         Map<Id, Id> quoteToParentMap = new Map<Id, Id>();
         for (Quote q : quotes) {
