@@ -46,17 +46,23 @@ export default class RcaQuoteComparator extends LightningElement {
             return [];
         }
 
-        return this.comparisonData.sectionOrder.map(objectApiName => {
+        // Filter out QuoteLineItemAttribute as it will be nested under QuoteLineItem
+        const filteredSections = this.comparisonData.sectionOrder.filter(objectApiName => 
+            objectApiName !== 'QuoteLineItemAttribute'
+        );
+
+        return filteredSections.map(objectApiName => {
             const quote1Section = this.comparisonData.quote1Data[objectApiName];
             const quote2Section = this.comparisonData.quote2Data[objectApiName];
             
-            // Transform sections to include field values
-            const transformedQuote1Section = this.transformSectionWithFieldValues(quote1Section);
-            const transformedQuote2Section = this.transformSectionWithFieldValues(quote2Section);
+            // Transform sections to include field values and nest attributes
+            const transformedQuote1Section = this.transformSectionWithFieldValues(quote1Section, objectApiName, 'quote1');
+            const transformedQuote2Section = this.transformSectionWithFieldValues(quote2Section, objectApiName, 'quote2');
             
             return {
                 objectApiName: objectApiName,
                 objectLabel: quote1Section ? quote1Section.objectLabel : 'Unknown Object',
+                label: quote1Section ? quote1Section.objectLabel : 'Unknown Object', // Add label for accordion
                 quote1Section: transformedQuote1Section,
                 quote2Section: transformedQuote2Section,
                 hasChildRecords: quote1Section && quote1Section.childRecords && quote1Section.childRecords.length > 0,
@@ -68,7 +74,7 @@ export default class RcaQuoteComparator extends LightningElement {
     /**
      * Transform section to include computed field values
      */
-    transformSectionWithFieldValues(section) {
+    transformSectionWithFieldValues(section, objectApiName, quoteType) {
         if (!section) return null;
 
         const transformedSection = { ...section };
@@ -82,19 +88,55 @@ export default class RcaQuoteComparator extends LightningElement {
             }));
         }
 
-        // Transform child records with field values
+        // Transform child records with field values and nest attributes
         if (section.childRecords) {
-            transformedSection.childRecordsWithValues = section.childRecords.map(childWrapper => ({
-                ...childWrapper,
-                fieldsWithValues: section.fields ? section.fields.map(field => ({
-                    ...field,
-                    value: this.getFieldValue(childWrapper.record, field.apiName),
-                    formattedValue: this.formatFieldValue(this.getFieldValue(childWrapper.record, field.apiName), field.type)
-                })) : []
-            }));
+            transformedSection.childRecordsWithValues = section.childRecords.map(childWrapper => {
+                const transformedChild = {
+                    ...childWrapper,
+                    fieldsWithValues: section.fields ? section.fields.map(field => ({
+                        ...field,
+                        value: this.getFieldValue(childWrapper.record, field.apiName),
+                        formattedValue: this.formatFieldValue(this.getFieldValue(childWrapper.record, field.apiName), field.type)
+                    })) : []
+                };
+
+                // For QuoteLineItem, add nested attributes
+                if (objectApiName === 'QuoteLineItem' && this.comparisonData && this.comparisonData.quote1Data.QuoteLineItemAttribute) {
+                    transformedChild.attributes = this.getAttributesForLineItem(childWrapper.record.Id, quoteType);
+                }
+
+                return transformedChild;
+            });
         }
 
         return transformedSection;
+    }
+
+    /**
+     * Get attributes for a specific quote line item
+     */
+    getAttributesForLineItem(lineItemId, quoteType) {
+        const attributeData = quoteType === 'quote1' 
+            ? this.comparisonData.quote1Data.QuoteLineItemAttribute
+            : this.comparisonData.quote2Data.QuoteLineItemAttribute;
+            
+        if (!attributeData || !attributeData.childRecords) {
+            return [];
+        }
+
+        // Find attributes that belong to this line item
+        const attributes = attributeData.childRecords
+            .filter(attrWrapper => attrWrapper.record.QuoteLineItemId === lineItemId)
+            .map(attrWrapper => ({
+                ...attrWrapper,
+                fieldsWithValues: attributeData.fields ? attributeData.fields.map(field => ({
+                    ...field,
+                    value: this.getFieldValue(attrWrapper.record, field.apiName),
+                    formattedValue: this.formatFieldValue(this.getFieldValue(attrWrapper.record, field.apiName), field.type)
+                })) : []
+            }));
+
+        return attributes;
     }
 
     /**

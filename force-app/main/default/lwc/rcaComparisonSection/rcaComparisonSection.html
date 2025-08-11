@@ -68,14 +68,25 @@
                                     </div>
                                 </template>
 
-                                <!-- Grandchild Records -->
-                                <template if:true={childWrapper.grandchildRecords}>
-                                    <template for:each={childWrapper.grandchildRecords} for:item="grandchild">
-                                        <div key={grandchild.Id} class="slds-box slds-theme_shade slds-m-top_small">
+                                <!-- QuoteLineItem Attributes -->
+                                <template if:true={childWrapper.attributes}>
+                                    <template for:each={childWrapper.attributes} for:item="attribute">
+                                        <div key={attribute.record.Id} class="slds-box slds-theme_shade slds-m-top_small">
                                             <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">
-                                                Attribute: {grandchild.Name}
+                                                QuoteLineItem Attribute
                                             </div>
-                                            <!-- Add more grandchild fields as needed -->
+                                            <template for:each={attribute.fieldsWithValues} for:item="field">
+                                                <div key={field.apiName} class="slds-form-element slds-m-bottom_xx-small">
+                                                    <label class="slds-form-element__label slds-text-body_small">
+                                                        {field.label}
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-formatted-text 
+                                                            value={field.formattedValue}>
+                                                        </lightning-formatted-text>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
                                     </template>
                                 </template>
@@ -102,14 +113,25 @@
                                     </div>
                                 </template>
 
-                                <!-- Grandchild Records -->
-                                <template if:true={childWrapper.grandchildRecords}>
-                                    <template for:each={childWrapper.grandchildRecords} for:item="grandchild">
-                                        <div key={grandchild.Id} class="slds-box slds-theme_shade slds-m-top_small">
+                                <!-- QuoteLineItem Attributes -->
+                                <template if:true={childWrapper.attributes}>
+                                    <template for:each={childWrapper.attributes} for:item="attribute">
+                                        <div key={attribute.record.Id} class="slds-box slds-theme_shade slds-m-top_small">
                                             <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">
-                                                Attribute: {grandchild.Name}
+                                                QuoteLineItem Attribute
                                             </div>
-                                            <!-- Add more grandchild fields as needed -->
+                                            <template for:each={attribute.fieldsWithValues} for:item="field">
+                                                <div key={field.apiName} class="slds-form-element slds-m-bottom_xx-small">
+                                                    <label class="slds-form-element__label slds-text-body_small">
+                                                        {field.label}
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-formatted-text 
+                                                            value={field.formattedValue}>
+                                                        </lightning-formatted-text>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
                                     </template>
                                 </template>
