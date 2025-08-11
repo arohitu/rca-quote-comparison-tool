@@ -66,13 +66,24 @@ public with sharing class RCA_QuoteComparisonController {
         RCA_DataStructures.ComparisonPayload payload
     ) {
         // Get field configuration
-        Schema.FieldSet fieldSet = RCA_ConfigurationService.getFieldSet(configObj.Object_API_Name__c);
-        if (fieldSet == null) {
-            System.debug('No field set found for object: ' + configObj.Object_API_Name__c);
-            return;
+        List<RCA_DataStructures.FieldDefinition> fieldDefinitions;
+        
+        // Special handling for objects without field sets (like QuoteLineItemAttribute)
+        if (configObj.Object_API_Name__c == 'QuoteLineItemAttribute') {
+            fieldDefinitions = RCA_ConfigurationService.buildFieldDefinitionsFromDescribe(configObj.Object_API_Name__c);
+        } else {
+            Schema.FieldSet fieldSet = RCA_ConfigurationService.getFieldSet(configObj.Object_API_Name__c);
+            if (fieldSet == null) {
+                System.debug('No field set found for object: ' + configObj.Object_API_Name__c);
+                return;
+            }
+            fieldDefinitions = RCA_ConfigurationService.buildFieldDefinitions(fieldSet);
         }
         
-        List<RCA_DataStructures.FieldDefinition> fieldDefinitions = RCA_ConfigurationService.buildFieldDefinitions(fieldSet);
+        if (fieldDefinitions.isEmpty()) {
+            System.debug('No field definitions found for object: ' + configObj.Object_API_Name__c);
+            return;
+        }
         
         // Enhance field definitions with relationship field mapping
         fieldDefinitions = RCA_DataProcessorService.enhanceFieldDefinitions(fieldDefinitions, configObj.Object_API_Name__c);

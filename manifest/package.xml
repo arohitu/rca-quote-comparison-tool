@@ -27,6 +27,7 @@
         <members>RCA_Comparison_Object.Opportunity</members>
         <members>RCA_Comparison_Object.Quote</members>
         <members>RCA_Comparison_Object.QuoteLineItem</members>
+        <members>RCA_Comparison_Object.QuoteLineItemAttribute</members>
         <name>CustomMetadata</name>
     </types>
     <types>

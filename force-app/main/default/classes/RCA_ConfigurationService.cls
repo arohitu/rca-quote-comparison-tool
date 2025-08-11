@@ -67,6 +67,50 @@ public with sharing class RCA_ConfigurationService {
     }
     
     /**
+     * @description Build field definitions for objects without field sets (using all non-audit fields)
+     * @param objectApiName The object API name
+     * @return List of field definitions
+     */
+    public static List<RCA_DataStructures.FieldDefinition> buildFieldDefinitionsFromDescribe(String objectApiName) {
+        List<RCA_DataStructures.FieldDefinition> definitions = new List<RCA_DataStructures.FieldDefinition>();
+        
+        try {
+            Schema.SObjectType objectType = Schema.getGlobalDescribe().get(objectApiName);
+            if (objectType == null) {
+                return definitions;
+            }
+            
+            Map<String, Schema.SObjectField> fieldMap = objectType.getDescribe().fields.getMap();
+            Set<String> auditFields = new Set<String>{
+                'CreatedById', 'CreatedDate', 'LastModifiedById', 'LastModifiedDate', 'SystemModstamp'
+            };
+            
+            for (String fieldName : fieldMap.keySet()) {
+                Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldName).getDescribe();
+                
+                // Skip audit fields and non-accessible fields
+                if (auditFields.contains(fieldDescribe.getName()) || !fieldDescribe.isAccessible()) {
+                    continue;
+                }
+                
+                RCA_DataStructures.FieldDefinition def = new RCA_DataStructures.FieldDefinition();
+                def.apiName = fieldDescribe.getName();
+                def.label = fieldDescribe.getLabel();
+                def.type = String.valueOf(fieldDescribe.getType());
+                definitions.add(def);
+            }
+            
+            // Sort by label for consistent display
+            definitions.sort();
+            
+        } catch (Exception e) {
+            System.debug('Error building field definitions for ' + objectApiName + ': ' + e.getMessage());
+        }
+        
+        return definitions;
+    }
+    
+    /**
      * @description Validate configuration for completeness
      * @param comparisonObjects List of configuration objects to validate
      * @return Boolean indicating if configuration is valid

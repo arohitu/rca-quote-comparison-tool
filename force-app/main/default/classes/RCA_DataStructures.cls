@@ -51,10 +51,20 @@ public with sharing class RCA_DataStructures {
     /**
      * @description Describes a field from the field set
      */
-    public class FieldDefinition {
+    public class FieldDefinition implements Comparable {
         @AuraEnabled public String apiName;
         @AuraEnabled public String label;
         @AuraEnabled public String type;
+        
+        /**
+         * @description Compare field definitions by label for sorting
+         * @param compareTo Object to compare to
+         * @return Integer comparison result
+         */
+        public Integer compareTo(Object compareTo) {
+            FieldDefinition other = (FieldDefinition) compareTo;
+            return this.label.compareTo(other.label);
+        }
     }
     
     /**
