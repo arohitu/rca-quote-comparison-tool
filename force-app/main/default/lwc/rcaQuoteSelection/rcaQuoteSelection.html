@@ -1,0 +1,56 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters">
+        <!-- Current Quote Card -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+            <lightning-card title="Quote 1" icon-name="standard:quote">
+                <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label">Selected Quote</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-box slds-theme_shade">
+                                <div class="slds-text-heading_small">{currentQuoteName}</div>
+                                <template if:true={currentQuoteNumber}>
+                                    <div class="slds-text-body_small slds-text-color_weak">
+                                        Quote Number: {currentQuoteNumber}
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </lightning-card>
+        </div>
+
+        <!-- Comparison Quote Card -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+            <lightning-card title="Quote 2" icon-name="standard:quote">
+                <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+                    <lightning-record-picker
+                        label="Comparison Quote"
+                        placeholder="Search for a quote to compare..."
+                        object-api-name="Quote"
+                        field-level-help="Select the second quote to compare against the current quote."
+                        onchange={handleComparisonQuoteChange}
+                        required>
+                    </lightning-record-picker>
+                </div>
+            </lightning-card>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="slds-m-top_medium slds-text-align_right">
+        <lightning-button 
+            variant="neutral" 
+            label="Cancel" 
+            onclick={handleCancel}
+            class="slds-m-right_small">
+        </lightning-button>
+        <lightning-button 
+            variant="brand" 
+            label="Compare" 
+            onclick={handleCompare}
+            disabled={isLoading}>
+        </lightning-button>
+    </div>
+</template>

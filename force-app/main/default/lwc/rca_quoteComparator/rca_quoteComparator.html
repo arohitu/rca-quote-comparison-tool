@@ -1,0 +1,64 @@
+<template>
+    <!-- Modal Container -->
+    <div class="slds-modal slds-fade-in-open slds-modal_large" role="dialog">
+        <div class="slds-modal__container">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                        title="Close" onclick={handleClose}>
+                    <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                </button>
+                <h2 class="slds-modal__title slds-hyphenate">Quote Comparison Tool</h2>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="slds-modal__content slds-p-around_medium">
+                <!-- Loading Spinner -->
+                <template if:true={isLoading}>
+                    <div class="slds-is-relative slds-p-vertical_large">
+                        <lightning-spinner alternative-text="Loading comparison data..." size="medium"></lightning-spinner>
+                    </div>
+                </template>
+
+                <!-- Error Message -->
+                <template if:true={error}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                        <span class="slds-assistive-text">Error</span>
+                        <lightning-icon icon-name="utility:error" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        {error}
+                    </div>
+                </template>
+
+                <!-- Quote Selection Component -->
+                <template if:false={showComparison}>
+                    <c-rca-quote-selection
+                        record-id={recordId}
+                        selected-quote-id={comparisonQuoteId}
+                        is-loading={isLoading}
+                        onquoteselection={handleQuoteSelection}
+                        oncompare={handleCompare}
+                        oncancel={handleClose}>
+                    </c-rca-quote-selection>
+                </template>
+
+                <!-- Comparison Display Component -->
+                <template if:true={showComparison}>
+                    <c-rca-comparison-display
+                        comparison-sections={comparisonSections}
+                        quote1-name={currentQuoteName}
+                        quote2-name={comparisonQuoteName}
+                        onback={handleBack}
+                        onclose={handleClose}>
+                    </c-rca-comparison-display>
+                </template>
+            </div>
+
+            <!-- Modal Footer - Empty since buttons are in child components -->
+            <footer class="slds-modal__footer">
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal Backdrop -->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

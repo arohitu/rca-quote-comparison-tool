@@ -1,0 +1,123 @@
+<template>
+    <div class="slds-m-bottom_large">
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">{objectLabel}</h3>
+        
+        <!-- Parent/Self Records -->
+        <template if:true={hasParentRecord}>
+            <div class="slds-grid slds-gutters">
+                <!-- Quote 1 Data -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card title={quote1Name}>
+                        <div class="slds-p-around_medium">
+                            <template for:each={quote1FieldsWithValues} for:item="field">
+                                <div key={field.apiName} class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label slds-text-body_small">
+                                        {field.label}
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <lightning-formatted-text 
+                                            value={field.formattedValue}>
+                                        </lightning-formatted-text>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Quote 2 Data -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card title={quote2Name}>
+                        <div class="slds-p-around_medium">
+                            <template for:each={quote2FieldsWithValues} for:item="field">
+                                <div key={field.apiName} class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label slds-text-body_small">
+                                        {field.label}
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <lightning-formatted-text 
+                                            value={field.formattedValue}>
+                                        </lightning-formatted-text>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+            </div>
+        </template>
+
+        <!-- Child Records -->
+        <template if:true={hasChildRecords}>
+            <div class="slds-grid slds-gutters">
+                <!-- Quote 1 Child Records -->
+                <div class="slds-col slds-size_1-of-2">
+                    <template for:each={quote1ChildRecordsWithValues} for:item="childWrapper">
+                        <lightning-card key={childWrapper.record.Id} class="slds-m-bottom_small">
+                            <div class="slds-p-around_medium">
+                                <template for:each={childWrapper.fieldsWithValues} for:item="field">
+                                    <div key={field.apiName} class="slds-form-element slds-m-bottom_x-small">
+                                        <label class="slds-form-element__label slds-text-body_small">
+                                            {field.label}
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <lightning-formatted-text 
+                                                value={field.formattedValue}>
+                                            </lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- Grandchild Records -->
+                                <template if:true={childWrapper.grandchildRecords}>
+                                    <template for:each={childWrapper.grandchildRecords} for:item="grandchild">
+                                        <div key={grandchild.Id} class="slds-box slds-theme_shade slds-m-top_small">
+                                            <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">
+                                                Attribute: {grandchild.Name}
+                                            </div>
+                                            <!-- Add more grandchild fields as needed -->
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </lightning-card>
+                    </template>
+                </div>
+
+                <!-- Quote 2 Child Records -->
+                <div class="slds-col slds-size_1-of-2">
+                    <template for:each={quote2ChildRecordsWithValues} for:item="childWrapper">
+                        <lightning-card key={childWrapper.record.Id} class="slds-m-bottom_small">
+                            <div class="slds-p-around_medium">
+                                <template for:each={childWrapper.fieldsWithValues} for:item="field">
+                                    <div key={field.apiName} class="slds-form-element slds-m-bottom_x-small">
+                                        <label class="slds-form-element__label slds-text-body_small">
+                                            {field.label}
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <lightning-formatted-text 
+                                                value={field.formattedValue}>
+                                            </lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- Grandchild Records -->
+                                <template if:true={childWrapper.grandchildRecords}>
+                                    <template for:each={childWrapper.grandchildRecords} for:item="grandchild">
+                                        <div key={grandchild.Id} class="slds-box slds-theme_shade slds-m-top_small">
+                                            <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">
+                                                Attribute: {grandchild.Name}
+                                            </div>
+                                            <!-- Add more grandchild fields as needed -->
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </lightning-card>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

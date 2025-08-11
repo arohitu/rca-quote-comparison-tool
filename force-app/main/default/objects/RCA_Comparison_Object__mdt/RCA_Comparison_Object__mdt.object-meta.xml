@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>RCA Comparison Object</label>
+    <pluralLabel>RCA Comparison Objects</pluralLabel>
+    <visibility>Public</visibility>
+    <description>Configuration for objects to include in the Quote Comparison Tool</description>
+</CustomObject>
