@@ -131,7 +131,28 @@ For each object you configured in Step 2, create a Field Set with the exact API 
 - Discount
 - Description
 
-### Step 4: Quick Action Setup
+### Step 4: Assign Permission Set
+
+Assign the **RCA Quote Compare User** permission set to users who need access to the quote comparison functionality.
+
+#### Option A: Assign via Setup UI
+1. Navigate to **Setup → Users → Permission Sets**
+2. Click on **RCA Quote Compare User**
+3. Click **Manage Assignments**
+4. Click **Add Assignments**
+5. Select the users who need access
+6. Click **Assign** then **Done**
+
+#### Option B: Assign via Salesforce CLI
+```bash
+# Assign to a specific user
+sf org assign permset --name RCA_QuoteCompareUser --target-org your-org-alias
+
+# Or assign to current user
+sf org assign permset --name RCA_QuoteCompareUser
+```
+
+### Step 5: Quick Action Setup
 
 The **Compare Quote** Quick Action is automatically deployed with the package and will be available on Quote records. However, you need to add it to your page layouts to make it visible.
 
@@ -303,11 +324,55 @@ The component uses standard Lightning Design System classes. To customize:
 - Consider the number of child records being compared
 - Check for governor limit warnings in debug logs
 
+## 🔐 Security & Permissions
+
+The application implements several security best practices:
+
+- **Apex Sharing**: All Apex classes use `with sharing` to enforce record-level security
+- **Field Level Security (FLS)**: Automatically respected through dynamic SOQL and standard LWC components
+- **CRUD Permissions**: Users must have Read access to all configured objects and fields
+- **Custom Metadata**: Configuration is controlled through Custom Metadata Types, allowing admin-only changes
+
+### Permission Set: RCA_QuoteCompareUser
+
+The **RCA_QuoteCompareUser** permission set provides the minimum required permissions for users to access the quote comparison functionality:
+
+#### Apex Class Access:
+- RCA_QuoteComparisonController
+- RCA_ConfigurationService  
+- RCA_QueryBuilderService
+- RCA_DataProcessorService
+- RCA_DataStructures
+
+#### Object Permissions (Read Only):
+- Quote
+- Opportunity
+- QuoteLineItem
+- Account
+- Product2
+- PricebookEntry
+
+#### Custom Metadata Access:
+- RCA_Comparison_Object__mdt (Read access to configuration)
+
+#### System Permissions:
+- API Enabled (required for Lightning components)
+
+**Note**: Standard field permissions are handled automatically through object permissions. The permission set focuses on providing access to the custom components and related objects needed for the comparison functionality.
+
 ## 📝 Version History
+
+- **v1.1.0**: Modular architecture with API 64.0 and Permission Set
+  - Refactored into modular Apex services and parent-child LWC components
+  - Added comprehensive permission set (RCA_QuoteCompareUser)
+  - Automated Quick Action deployment
+  - Enhanced maintainability and testability
+  - Updated to Salesforce API version 64.0
+
 - **v1.0.0**: Initial release with core comparison functionality
-- Support for Quote, Opportunity, and QuoteLineItem objects
-- Configurable via Custom Metadata Types and Field Sets
-- Lightning Web Component with modal interface
+  - Support for Quote, Opportunity, and QuoteLineItem objects
+  - Configurable via Custom Metadata Types and Field Sets
+  - Lightning Web Component with modal interface
 
 ## 🤝 Contributing
 

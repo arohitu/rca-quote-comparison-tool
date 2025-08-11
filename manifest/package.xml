@@ -39,5 +39,9 @@
         <members>Quote.Compare_Quote</members>
         <name>QuickAction</name>
     </types>
+    <types>
+        <members>RCA_QuoteCompareUser</members>
+        <name>PermissionSet</name>
+    </types>
     <version>64.0</version>
 </Package>
