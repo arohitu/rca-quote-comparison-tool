@@ -123,12 +123,22 @@ public with sharing class RCA_ConfigurationService {
             return false;
         }
         
-        // Check if each configured object has a valid field set
+        // Check if each configured object has valid field configuration
         for (RCA_Comparison_Object__mdt configObj : comparisonObjects) {
-            Schema.FieldSet fieldSet = getFieldSet(configObj.Object_API_Name__c);
-            if (fieldSet == null || fieldSet.getFields().isEmpty()) {
-                System.debug('No valid field set found for: ' + configObj.Object_API_Name__c);
-                return false;
+            // Objects that use field describe approach (like QuoteLineItemAttribute)
+            if (configObj.Object_API_Name__c == 'QuoteLineItemAttribute') {
+                List<RCA_DataStructures.FieldDefinition> fieldDefinitions = buildFieldDefinitionsFromDescribe(configObj.Object_API_Name__c);
+                if (fieldDefinitions.isEmpty()) {
+                    System.debug('No valid field definitions found for: ' + configObj.Object_API_Name__c);
+                    return false;
+                }
+            } else {
+                // Objects that use field sets
+                Schema.FieldSet fieldSet = getFieldSet(configObj.Object_API_Name__c);
+                if (fieldSet == null || fieldSet.getFields().isEmpty()) {
+                    System.debug('No valid field set found for: ' + configObj.Object_API_Name__c);
+                    return false;
+                }
             }
         }
         
