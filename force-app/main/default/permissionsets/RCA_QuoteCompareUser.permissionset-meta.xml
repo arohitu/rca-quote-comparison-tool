@@ -3,8 +3,6 @@
     <description>Permission set for RCA Quote Comparison Tool users. Grants access to all components needed to use the quote comparison functionality.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>RCA Quote Compare User</label>
-    
-    <!-- Apex Class Permissions -->
     <classAccesses>
         <apexClass>RCA_QuoteComparisonController</apexClass>
         <enabled>true</enabled>
@@ -25,14 +23,10 @@
         <apexClass>RCA_DataStructures</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-    
-    <!-- Custom Metadata Type Permissions -->
     <customMetadataTypeAccesses>
         <enabled>true</enabled>
         <name>RCA_Comparison_Object__mdt</name>
     </customMetadataTypeAccesses>
-    
-    <!-- Object Permissions -->
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
@@ -42,7 +36,6 @@
         <object>Quote</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
@@ -52,7 +45,6 @@
         <object>Opportunity</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
@@ -62,7 +54,6 @@
         <object>QuoteLineItem</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
@@ -72,7 +63,6 @@
         <object>Account</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
@@ -82,7 +72,6 @@
         <object>Product2</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
@@ -92,12 +81,6 @@
         <object>PricebookEntry</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    
-    <!-- Field Permissions for Custom Fields Only -->
-    <!-- Standard fields are handled by object permissions -->
-    <!-- Custom fields can be added here as needed -->
-    
-    <!-- System Permissions -->
     <userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>

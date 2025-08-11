@@ -36,7 +36,7 @@
         <name>FieldSet</name>
     </types>
     <types>
-        <members>Quote.Compare_Quote</members>
+        <members>Quote.RCA_CompareQuote</members>
         <name>QuickAction</name>
     </types>
     <types>

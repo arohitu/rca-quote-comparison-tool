@@ -16,12 +16,61 @@ public with sharing class RCA_QueryBuilderService {
         Set<String> fieldNames = new Set<String>();
         fieldNames.add('Id'); // Always include Id
         
+        // Add relationship fields based on object type for data processing
+        if (objectApiName == 'QuoteLineItem') {
+            fieldNames.add('QuoteId'); // Required for grouping by quote
+        } else if (objectApiName == 'Quote') {
+            fieldNames.add('OpportunityId'); // Required for parent relationships
+        }
+        
         for (RCA_DataStructures.FieldDefinition field : fields) {
             fieldNames.add(field.apiName);
         }
         
         String soql = 'SELECT ' + String.join(new List<String>(fieldNames), ', ') + 
                      ' FROM ' + objectApiName;
+        
+        if (String.isNotBlank(whereClause)) {
+            soql += ' WHERE ' + whereClause;
+        }
+        
+        return soql;
+    }
+    
+    /**
+     * @description Build SOQL query with relationship fields based on configuration
+     * @param configObj Configuration metadata object
+     * @param fields List of fields to include
+     * @param whereClause WHERE clause for the query
+     * @return String The complete SOQL query with necessary relationship fields
+     */
+    public static String buildSOQLQueryWithRelationshipFields(
+        RCA_Comparison_Object__mdt configObj, 
+        List<RCA_DataStructures.FieldDefinition> fields, 
+        String whereClause
+    ) {
+        Set<String> fieldNames = new Set<String>();
+        fieldNames.add('Id'); // Always include Id
+        
+        // Add relationship fields based on object type for data processing
+        if (configObj.Object_API_Name__c == 'QuoteLineItem') {
+            fieldNames.add('QuoteId'); // Required for grouping by quote
+        } else if (configObj.Object_API_Name__c == 'Quote') {
+            fieldNames.add('OpportunityId'); // Required for parent relationships
+        }
+        
+        // Add parent identifier field if this is a grandchild relationship
+        if (String.isNotBlank(configObj.Parent_Identifier_Field__c)) {
+            fieldNames.add(configObj.Parent_Identifier_Field__c);
+        }
+        
+        // Add configured fields
+        for (RCA_DataStructures.FieldDefinition field : fields) {
+            fieldNames.add(field.apiName);
+        }
+        
+        String soql = 'SELECT ' + String.join(new List<String>(fieldNames), ', ') + 
+                     ' FROM ' + configObj.Object_API_Name__c;
         
         if (String.isNotBlank(whereClause)) {
             soql += ' WHERE ' + whereClause;
@@ -107,7 +156,7 @@ public with sharing class RCA_QueryBuilderService {
             whereClause = configObj.Parent_Identifier_Field__c + ' IN (SELECT Id FROM QuoteLineItem WHERE QuoteId IN (:quote1Id, :quote2Id))';
         }
         
-        String soqlQuery = buildSOQLQuery(configObj.Object_API_Name__c, fieldDefinitions, whereClause);
+        String soqlQuery = buildSOQLQueryWithRelationshipFields(configObj, fieldDefinitions, whereClause);
         List<SObject> records = Database.query(soqlQuery);
         
         return new RCA_DataStructures.QueryResult(records, configObj.Object_API_Name__c, 'Child');
