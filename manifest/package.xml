@@ -6,6 +6,10 @@
         <members>RCA_DataStructures</members>
         <members>RCA_QueryBuilderService</members>
         <members>RCA_DataProcessorService</members>
+        <members>RCA_QuoteComparisonControllerTest</members>
+        <members>RCA_ConfigurationServiceTest</members>
+        <members>RCA_QueryBuilderServiceTest</members>
+        <members>RCA_DataProcessorServiceTest</members>
         <name>ApexClass</name>
     </types>
     <types>

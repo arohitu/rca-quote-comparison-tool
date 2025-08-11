@@ -6,7 +6,7 @@
         <formula>Id</formula>
     </fieldOverrides>
     <label>Compare Quote</label>
-    <lightningComponent>c:rca_quoteComparator</lightningComponent>
+    <lightningComponent>rca_quoteComparator</lightningComponent>
     <optionsCreateFeedItem>false</optionsCreateFeedItem>
     <type>LightningComponent</type>
 </QuickAction>
