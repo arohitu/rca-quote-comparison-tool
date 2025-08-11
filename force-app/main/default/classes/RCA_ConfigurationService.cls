@@ -67,7 +67,7 @@ public with sharing class RCA_ConfigurationService {
     }
     
     /**
-     * @description Build field definitions for objects without field sets (using all non-audit fields)
+     * @description Build field definitions for objects without field sets (using specific fields)
      * @param objectApiName The object API name
      * @return List of field definitions
      */
@@ -81,23 +81,26 @@ public with sharing class RCA_ConfigurationService {
             }
             
             Map<String, Schema.SObjectField> fieldMap = objectType.getDescribe().fields.getMap();
-            Set<String> auditFields = new Set<String>{
-                'CreatedById', 'CreatedDate', 'LastModifiedById', 'LastModifiedDate', 'SystemModstamp'
-            };
             
-            for (String fieldName : fieldMap.keySet()) {
-                Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldName).getDescribe();
-                
-                // Skip audit fields and non-accessible fields
-                if (auditFields.contains(fieldDescribe.getName()) || !fieldDescribe.isAccessible()) {
-                    continue;
+            // Define specific fields for each object type
+            Set<String> fieldsToInclude = new Set<String>();
+            if (objectApiName == 'QuoteLineItemAttribute') {
+                fieldsToInclude.addAll(new Set<String>{'AttributeName', 'AttributeValue'});
+            }
+            
+            for (String fieldName : fieldsToInclude) {
+                if (fieldMap.containsKey(fieldName.toLowerCase())) {
+                    Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldName.toLowerCase()).getDescribe();
+                    
+                    // Only include accessible fields
+                    if (fieldDescribe.isAccessible()) {
+                        RCA_DataStructures.FieldDefinition def = new RCA_DataStructures.FieldDefinition();
+                        def.apiName = fieldDescribe.getName();
+                        def.label = fieldDescribe.getLabel();
+                        def.type = String.valueOf(fieldDescribe.getType());
+                        definitions.add(def);
+                    }
                 }
-                
-                RCA_DataStructures.FieldDefinition def = new RCA_DataStructures.FieldDefinition();
-                def.apiName = fieldDescribe.getName();
-                def.label = fieldDescribe.getLabel();
-                def.type = String.valueOf(fieldDescribe.getType());
-                definitions.add(def);
             }
             
             // Sort by label for consistent display
