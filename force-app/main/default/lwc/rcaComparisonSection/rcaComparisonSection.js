@@ -75,4 +75,24 @@ export default class RcaComparisonSection extends LightningElement {
             ? this.quote2Section.childRecordsWithValues 
             : [];
     }
+
+    /**
+     * Get formatted field value with special handling for Product field
+     */
+    getFieldValue(field, record) {
+        if (field.apiName === 'Product2Id' && record && record.Product2 && record.Product2.Name) {
+            return record.Product2.Name;
+        }
+        return field.formattedValue || field.value || '--';
+    }
+
+    /**
+     * Get field label with special handling for Product field
+     */
+    getFieldLabel(field) {
+        if (field.apiName === 'Product2Id') {
+            return 'Product';
+        }
+        return field.label;
+    }
 }

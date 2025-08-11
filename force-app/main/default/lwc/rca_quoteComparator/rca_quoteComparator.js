@@ -148,11 +148,16 @@ export default class RcaQuoteComparator extends LightningElement {
     }
 
     /**
-     * Get field value from record
+     * Get field value from record with special handling for Product field
      */
     getFieldValue(record, fieldApiName) {
         if (!record || !fieldApiName) {
             return '';
+        }
+        
+        // Special handling for Product2Id field - show Product name instead
+        if (fieldApiName === 'Product2Id' && record.Product2 && record.Product2.Name) {
+            return record.Product2.Name;
         }
         
         // Handle relationship fields (e.g., Account.Name)

@@ -55,8 +55,11 @@ public with sharing class RCA_QueryBuilderService {
         // Add relationship fields based on object type for data processing
         if (configObj.Object_API_Name__c == 'QuoteLineItem') {
             fieldNames.add('QuoteId'); // Required for grouping by quote
+            fieldNames.add('Product2.Name'); // Product name for better display
         } else if (configObj.Object_API_Name__c == 'Quote') {
             fieldNames.add('OpportunityId'); // Required for parent relationships
+        } else if (configObj.Object_API_Name__c == 'QuoteLineItemAttribute') {
+            fieldNames.add('QuoteLineItemId'); // Required for grouping by line item
         }
         
         // Add parent identifier field if this is a grandchild relationship
@@ -76,7 +79,28 @@ public with sharing class RCA_QueryBuilderService {
             soql += ' WHERE ' + whereClause;
         }
         
+        // Add ordering for better side-by-side comparison
+        soql += getOrderByClause(configObj.Object_API_Name__c);
+        
         return soql;
+    }
+    
+    /**
+     * @description Get ORDER BY clause for consistent record ordering
+     * @param objectApiName The object API name
+     * @return String ORDER BY clause
+     */
+    private static String getOrderByClause(String objectApiName) {
+        if (objectApiName == 'QuoteLineItem') {
+            return ' ORDER BY Product2.Name, SortOrder, CreatedDate';
+        } else if (objectApiName == 'QuoteLineItemAttribute') {
+            return ' ORDER BY AttributeName, CreatedDate';
+        } else if (objectApiName == 'Quote') {
+            return ' ORDER BY Name, CreatedDate';
+        } else if (objectApiName == 'Opportunity') {
+            return ' ORDER BY Name, CreatedDate';
+        }
+        return ' ORDER BY CreatedDate';
     }
     
     /**

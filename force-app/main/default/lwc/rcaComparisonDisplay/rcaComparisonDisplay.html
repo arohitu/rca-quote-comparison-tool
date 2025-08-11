@@ -20,16 +20,22 @@
         </div>
     </div>
 
-    <!-- Comparison Sections -->
+    <!-- Comparison Sections in Accordion -->
     <template if:true={hasSections}>
-        <template for:each={comparisonSections} for:item="section">
-            <c-rca-comparison-section 
-                key={section.objectApiName}
-                section={section}
-                quote1-name={quote1Name}
-                quote2-name={quote2Name}>
-            </c-rca-comparison-section>
-        </template>
+        <lightning-accordion allow-multiple-sections-open class="slds-m-bottom_medium">
+            <template for:each={comparisonSections} for:item="section">
+                <lightning-accordion-section 
+                    key={section.objectApiName}
+                    name={section.objectApiName}
+                    label={section.label}>
+                    <c-rca-comparison-section 
+                        section={section}
+                        quote1-name={quote1Name}
+                        quote2-name={quote2Name}>
+                    </c-rca-comparison-section>
+                </lightning-accordion-section>
+            </template>
+        </lightning-accordion>
     </template>
 
     <!-- No Data Message -->

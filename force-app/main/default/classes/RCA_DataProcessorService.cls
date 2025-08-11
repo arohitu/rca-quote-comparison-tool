@@ -223,6 +223,36 @@ public with sharing class RCA_DataProcessorService {
     }
     
     /**
+     * @description Enhance field definitions with relationship field mapping
+     * @param fieldDefinitions List of field definitions to enhance
+     * @param objectApiName Object API name for context
+     * @return Enhanced field definitions
+     */
+    public static List<RCA_DataStructures.FieldDefinition> enhanceFieldDefinitions(
+        List<RCA_DataStructures.FieldDefinition> fieldDefinitions,
+        String objectApiName
+    ) {
+        List<RCA_DataStructures.FieldDefinition> enhanced = new List<RCA_DataStructures.FieldDefinition>();
+        
+        for (RCA_DataStructures.FieldDefinition field : fieldDefinitions) {
+            RCA_DataStructures.FieldDefinition enhancedField = new RCA_DataStructures.FieldDefinition();
+            enhancedField.apiName = field.apiName;
+            enhancedField.type = field.type;
+            
+            // Special handling for Product field on QuoteLineItem
+            if (objectApiName == 'QuoteLineItem' && field.apiName == 'Product2Id') {
+                enhancedField.label = 'Product';
+            } else {
+                enhancedField.label = field.label;
+            }
+            
+            enhanced.add(enhancedField);
+        }
+        
+        return enhanced;
+    }
+    
+    /**
      * @description Process query result based on relationship type
      * @param queryResult Query result to process
      * @param configObj Configuration metadata

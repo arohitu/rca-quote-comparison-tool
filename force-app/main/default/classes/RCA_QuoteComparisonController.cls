@@ -74,6 +74,9 @@ public with sharing class RCA_QuoteComparisonController {
         
         List<RCA_DataStructures.FieldDefinition> fieldDefinitions = RCA_ConfigurationService.buildFieldDefinitions(fieldSet);
         
+        // Enhance field definitions with relationship field mapping
+        fieldDefinitions = RCA_DataProcessorService.enhanceFieldDefinitions(fieldDefinitions, configObj.Object_API_Name__c);
+        
         // Execute query
         RCA_DataStructures.QueryResult queryResult = RCA_QueryBuilderService.executeQuery(
             configObj, 
